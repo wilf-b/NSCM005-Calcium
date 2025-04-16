@@ -1,0 +1,46 @@
+
+% Parameters
+k_flux = 8.1;
+%mu = 0.567;
+mu = 0.7;
+b = 0.111;
+V1 = 0.889;
+k1 = 0.7;
+k2 = 0.7;
+gamma = 2.0;
+k_gamma = 0.1;
+tau_n = 2.0;
+beta = 0;
+
+% Initial conditions
+c0 = 0.9;
+n0 = 0.1;
+
+% Time span
+tspan = [0 100];
+
+% Solve ODE
+[t, y] = ode45(@(t,y) odefun(t,y,k_flux,mu,b,V1,k1,k2,gamma,k_gamma,tau_n,beta), tspan, [c0; n0]);
+
+% Plot results
+figure;
+plot(t, y(:,1), 'b', t, y(:,2), 'r');
+xlabel('Time');
+ylabel('Concentration');
+legend('c ([Ca^{2+}]_c)', 'n');
+title('Calcium Oscillations');
+
+function dydt = odefun(t, y, k_flux, mu, b, V1, k1, k2, gamma, k_gamma, tau_n, beta)
+    c = y(1);
+    n = y(2);
+
+    % Equations
+    dcdt = k_flux * mu * n * (b + V1*c/(k1+c)) - gamma*c/(k_gamma+c) + beta;
+    dndt = (1 - c^2/(k2^2+c^2) - n) / tau_n;
+
+    dydt = [dcdt; dndt];
+end
+
+
+
+
